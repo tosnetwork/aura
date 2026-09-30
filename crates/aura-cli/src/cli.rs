@@ -8,6 +8,9 @@ pub enum Command {
     /// a minimal config.toml.
     Init(crate::init::InitArgs),
 
+    /// Ask a locally signed-in Codex agent through its app-server protocol.
+    Codex(crate::codex_bridge::CodexArgs),
+
     /// Run the OpenAI-compatible web server instead of the interactive CLI.
     ///
     /// Every following argument belongs to the server; run
@@ -148,7 +151,7 @@ pub fn check_standalone_flag() {
     let pass_through = std::env::args().any(|a| {
         matches!(
             a.as_str(),
-            "--help" | "-h" | "--version" | "-V" | "init" | "webserver"
+            "--help" | "-h" | "--version" | "-V" | "init" | "codex" | "webserver"
         )
     });
     if pass_through {

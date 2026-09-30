@@ -15,6 +15,8 @@ use aura_cli::ui::prompt::AgentHost;
 ///
 /// Returns whether the process is running standalone or not.
 fn resolve_env_config(args: &Args) -> bool {
+    #[cfg(not(feature = "standalone-cli"))]
+    let _ = args;
     // Loads .env so a config's {{ env.* }} references resolve without manual
     // exporting. CWD first, then the config file's directory (init writes
     // .env next to the config). dotenvy never overwrites — shell exports and
@@ -49,6 +51,10 @@ fn main() -> Result<()> {
 
     let args = Args::parse();
 
+    if let Some(aura_cli::cli::Command::Codex(codex_args)) = &args.command {
+        return aura_cli::codex_bridge::run(codex_args);
+    }
+
     // Do this first since subcommands may depend on env var values
     let is_standalone = resolve_env_config(&args);
 
@@ -58,6 +64,7 @@ fn main() -> Result<()> {
         Some(aura_cli::cli::Command::Init(init_args)) => {
             return aura_cli::init::run_init(init_args);
         }
+        Some(aura_cli::cli::Command::Codex(_)) => unreachable!(),
         #[cfg(feature = "webserver")]
         Some(aura_cli::cli::Command::Webserver { args }) => return aura_cli::webserver::run(args),
         #[cfg(feature = "standalone-cli")]

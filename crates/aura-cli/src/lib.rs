@@ -3,6 +3,7 @@ pub mod api;
 pub mod aura_dir;
 pub mod backend;
 pub mod cli;
+pub mod codex_bridge;
 pub mod config;
 pub mod event_names;
 #[cfg(feature = "standalone-cli")]
